@@ -90,12 +90,16 @@
      leave the poster frame in place rather than showing a dead black box. */
   Array.prototype.forEach.call(document.querySelectorAll('video[autoplay]'), function (v) {
     var attempt = v.play();
-    if (attempt && typeof attempt.catch === 'function') {
-      attempt.catch(function () {
+    if (!attempt || typeof attempt.catch !== 'function') return;
+    attempt.catch(function () {
+      v.removeAttribute('autoplay');
+      /* The hero clip is decoration behind the wordmark, so it falls back to
+         its poster frame. Content clips get controls so they stay watchable. */
+      if (!v.classList.contains('hero-video')) {
         v.setAttribute('controls', '');
-        v.removeAttribute('autoplay');
-      });
-    }
+        v.setAttribute('controlslist', 'nodownload noplaybackrate');
+      }
+    });
   });
 
   /* ---------- Concept inquiry form (no backend) ---------- */
