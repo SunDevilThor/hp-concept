@@ -73,6 +73,15 @@
       });
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
     Array.prototype.forEach.call(revealables, function (el) { revealer.observe(el); });
+
+    /* Safety net: if the observer never fires (odd viewport, headless render,
+       print), nothing should stay invisible. */
+    window.setTimeout(function () {
+      Array.prototype.forEach.call(revealables, function (el) {
+        var r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight * 1.5) el.classList.add('in');
+      });
+    }, 3000);
   }
 
   /* ---------- Autoplay guard for self-hosted video ----------
